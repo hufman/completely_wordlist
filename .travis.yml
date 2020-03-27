@@ -1,0 +1,5 @@
+language: java
+script: ./gradlew -q check
+
+after_success:
+  - ./gradlew -q coverage coveralls
