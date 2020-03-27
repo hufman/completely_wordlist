@@ -5,6 +5,7 @@ import me.hufman.completelywordlist.utils.IteratorCollection
 import me.hufman.completelywordlist.wordlist.WordListItem
 import me.hufman.completelywordlist.wordlist.WordListLoader
 import me.hufman.completelywordlist.wordlist.WordListReader
+import java.lang.Integer.max
 
 class CompletelyWordList {
 	companion object {
@@ -14,7 +15,7 @@ class CompletelyWordList {
 			val index = WordListIndex()
 			val engine = AutocompleteEngine.Builder<WordListItem>()
 				.setIndex(index)
-				.setComparator(compareByDescending { it.score - 1.0 / (it.`object`?.f ?: 1) })
+				.setComparator(compareByDescending { it.score - 1.0 / (max(1, it.`object`?.f ?: 1)) })
 				.build()
 
 			var language = args.getOrNull(1) ?: "en_US"
