@@ -1,0 +1,65 @@
+import de.undercouch.gradle.tasks.download.Download
+
+class Constants {
+    static String ROOT_URL = "https://git.replicant.us/LineageOS-mirror/android_packages_inputmethods_LatinIME/plain/dictionaries/"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'de.undercouch:gradle-download-task:4.0.4'
+    }
+}
+
+// dynamically build tasks for the discovered wordlists
+List<String> discoverWordLists() {
+    def lists = []
+    def wordlist_index_url = "${Constants.ROOT_URL}".toURL()
+    wordlist_index_url.text.eachLine { line ->
+        def languageMatcher = line =~ />([a-zA-Z_]+)_wordlist\.combined\.gz</
+        if (languageMatcher) {
+            def language = languageMatcher.group(1)
+            lists.add("downloadWordList_${language}")
+        }
+    }
+    return lists
+}
+
+task ('downloadWordList_tasks') {
+    description 'Outputs a list of wordlist tasks'
+    group 'wordlists'
+
+    doLast {
+        discoverWordLists().forEach { String taskName ->
+            println(taskName)
+        }
+    }
+}
+
+task('downloadWordList_all') {
+    description 'Downloads all wordlists'
+    group 'wordlists'
+
+    configure {
+        discoverWordLists().forEach { String taskName ->
+            downloadWordList_all.dependsOn(taskName)
+        }
+    }
+}
+
+tasks.addRule("Pattern: downloadWordList_<LANG>") { String taskName ->
+    def languageMatcher = taskName =~ /^downloadWordList_(.*)$/
+    if (languageMatcher) {
+        def language = languageMatcher.group(1)
+        task(taskName, type: Download) {
+            description "Downloads wordlist for ${language}"
+            group 'wordlists'
+
+            src "${Constants.ROOT_URL}${language}_wordlist.combined.gz"
+            dest file("${buildDir}/wordlists/${language}_wordlist.combined.gz")
+            outputs.file "${buildDir}/wordlists/${language}_wordlist.combined.gz"
+        }
+    }
+}

@@ -1,0 +1,3 @@
+include ':completelywordlist'
+
+rootProject.name='completely_wordlist'
