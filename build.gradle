@@ -50,5 +50,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-    implementation 'com.github.fmmfonseca.completely:completely-core:v0.8.0'
+    api 'com.github.fmmfonseca.completely:completely-core:v0.8.0'
 }

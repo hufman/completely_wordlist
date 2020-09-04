@@ -21,20 +21,16 @@ class WordListLoader {
 		return languages
 	}
 
-	private fun download(language: String): InputStream {
+	fun download(language: String): InputStream {
 		val url = "${ROOT_URL}${language}_wordlist.combined.gz"
 		return openUrl(url)
 	}
 
 	fun load(language: String): Reader {
 		val inputStream = try {
-			FileInputStream(File("completelywordlist/build/wordlists/${language}_wordlist.combined.gz"))
+			FileInputStream(File("build/wordlists/${language}_wordlist.combined.gz"))
 		} catch (e: IOException) {
-			try {
-				FileInputStream(File("build/wordlists/${language}_wordlist.combined.gz"))
-			} catch (e: IOException) {
-				download(language)
-			}
+			download(language)
 		}
 		return BufferedReader(InputStreamReader(GZIPInputStream(inputStream)))
 	}

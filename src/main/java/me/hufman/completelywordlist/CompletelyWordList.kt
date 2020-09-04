@@ -5,19 +5,22 @@ import me.hufman.completelywordlist.utils.IteratorCollection
 import me.hufman.completelywordlist.wordlist.WordListItem
 import me.hufman.completelywordlist.wordlist.WordListLoader
 import me.hufman.completelywordlist.wordlist.WordListReader
-import java.lang.Integer.max
+import kotlin.math.max
 
 class CompletelyWordList {
 	companion object {
 
+		fun createEngine(): AutocompleteEngine<WordListItem> {
+			val index = WordListIndex()
+			return AutocompleteEngine.Builder<WordListItem>()
+					.setIndex(index)
+					.setComparator(compareByDescending { it.score - 1.0 / (max(1, it.`object`?.f ?: 1)) })
+					.build()
+		}
+
 		@JvmStatic
 		fun main(args: Array<String>) {
-			val index = WordListIndex()
-			val engine = AutocompleteEngine.Builder<WordListItem>()
-				.setIndex(index)
-				.setComparator(compareByDescending { it.score - 1.0 / (max(1, it.`object`?.f ?: 1)) })
-				.build()
-
+			val engine = createEngine()
 			var language = args.getOrNull(1) ?: "en_US"
 			val reader = WordListLoader().load(language)
 			engine.addAll(
@@ -25,7 +28,6 @@ class CompletelyWordList {
 					WordListReader(reader)
 				)
 			)
-			println("Loaded ${index.size()} words")
 
 			var input = args.getOrNull(2) ?: ""
 			if (input.isNotBlank()) {
