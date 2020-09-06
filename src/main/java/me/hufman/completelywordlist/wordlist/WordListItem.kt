@@ -20,7 +20,7 @@ class WordListItem(val word: String, val f: Int, val flags: Set<String> = setOf(
 	}
 
 	override fun getFields(): List<String> {
-		return listOf(word)
+		return listOf(word.toLowerCase())
 	}
 
 
